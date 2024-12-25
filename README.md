@@ -1,16 +1,17 @@
+---
 # Telegram Channel Scraper
 
-This script is a Python-based tool designed to scrape Telegram channel URLs and extract unique channel IDs based on user-provided keywords. The script utilizes Selenium WebDriver and BeautifulSoup for web scraping and provides options for storing results in text files.
-
+This Python-based script is designed to scrape Telegram channel URLs based on user-provided keywords, using **Selenium** and **BeautifulSoup**. It allows for the extraction of Telegram channel IDs, the option to save results, and a method for combining and deduplicating extracted channel IDs from previous results.
 ---
 
 ## Features
 
-- **Keyword-based Search**: Users can input keywords to find relevant Telegram channels.
-- **Dynamic Content Loading**: Utilizes Selenium to handle dynamically loaded content on the target website.
-- **Channel ID Extraction**: Extracts unique Telegram channel IDs from the scraped URLs.
-- **Customizable Options**: Includes settings for the number of pages to scrape and sorting criteria.
-- **Output Files**: Saves the results and optional channel IDs to text files in a specified output directory.
+- **Keyword-based Search**: Input keywords to find relevant Telegram channels.
+- **Dynamic Content Handling**: Uses Selenium to interact with dynamic web content.
+- **Channel ID Extraction**: Extracts unique Telegram channel IDs from URLs.
+- **Customizable Scraping**: Control the number of pages to scrape and the sorting method (e.g., by date).
+- **Output Management**: Saves extracted channels and IDs to text files with timestamped filenames.
+- **ID Deduplication**: Combine and deduplicate channel IDs from previously saved results.
 
 ---
 
@@ -18,18 +19,19 @@ This script is a Python-based tool designed to scrape Telegram channel URLs and 
 
 ### Libraries Used:
 
-- `time`: For managing delays in the scraping process.
-- `os`: For managing file and directory operations.
-- `urllib.parse`: For encoding URLs.
-- `selenium`: For web automation and dynamic content loading.
+- `time`: Manages delays during the scraping process.
+- `os`: Handles file and directory operations.
+- `urllib.parse`: URL encoding for search keywords.
+- `json`: For loading keywords from a JSON file.
+- `selenium`: Web automation for dynamic content loading.
   - `webdriver`
   - `WebDriverWait`
   - `expected_conditions`
   - `By`
-- `webdriver_manager`: For automatic ChromeDriver installation.
-- `bs4 (BeautifulSoup)`: For parsing HTML content.
-- `datetime`: For timestamping output files.
-- `re`: For regular expressions to extract Telegram channel IDs.
+- `webdriver_manager`: Automatic management of ChromeDriver.
+- `bs4 (BeautifulSoup)`: HTML parsing to extract URLs.
+- `datetime`: Adds timestamps to output filenames.
+- `re`: Regular expressions to extract Telegram channel IDs.
 
 ### Install Required Libraries
 
@@ -44,69 +46,95 @@ pip install selenium webdriver-manager beautifulsoup4
 ## How to Use
 
 1. **Clone or Download the Repository**
+
    ```bash
    git clone https://github.com/MRAbbasi1/TelegramScraper.git
    cd TelegramScraper
    ```
 
-2. **Set Up Environment**
+2. **Set Up the Environment**
+
    Ensure you have Python 3.7+ installed.
 
 3. **Run the Script**
-   Execute the script with the following command:
-   
-  ```bash
-  source .venv/bin/activate
-  ```
 
-   ```bash
-   python Extract.py
-   ```
+   The script allows for two main actions: searching for channels based on keywords or extracting and deduplicating channel IDs from existing output.
 
-4. **Provide User Inputs**
-   - Enter keywords separated by commas (e.g., `news, technology`).
-   - Enter the number of pages to scrape (e.g., `5`).
-   - Optionally specify sorting criteria (`date` for chronological order or leave blank for relevance).
+   - **To activate the virtual environment (if using one)**:
 
-5. **Output Files**
-   - The results will be saved in the `Output/` directory with filenames containing the keyword and timestamp.
-   - Optionally, extract and save unique channel IDs.
+     ```bash
+     source .venv/bin/activate
+     ```
+
+   - **Run the main script**:
+     ```bash
+     python run.py
+     ```
+
+4. **User Input Prompts**
+
+   The script will prompt you to choose between two actions:
+
+   - **Search for Keywords**: Enter keywords to search Telegram channels.
+   - **Extract and Deduplicate IDs**: Combine and deduplicate previously saved channel IDs.
+
+5. **Output Files**  
+   The script saves the results in the `Output/` directory, with filenames containing the keyword and timestamp:
+   - Example: `Output/music_2024-12-25_12-00-00.txt`
+   - Optionally, unique channel IDs can be saved in separate files.
 
 ---
 
-## Example
+## Example Interaction
 
-1. **Input Example**:
+1. **Search for Channels**:
+
    ```
-   Enter keywords separated by commas: music, movies
+   Do you want to search for keywords or only extract IDs from the Output folder? (search/extract): search
+   Enter the path to the keywords JSON file: keywords.json
+   Do you want to extract and save unique channel IDs for each keyword? (yes/no): yes
    Enter the number of pages to scrape (e.g., 5): 3
    Enter sorting option ('date' or leave empty for relevance): date
    ```
 
-2. **Output Files**:
-   - `Output/music_2024-12-25_12-00-00.txt`
-   - `Output/music_ids_2024-12-25_12-00-00.txt` (optional, if unique IDs are saved)
+2. **Extract and Deduplicate Channel IDs**:
+   ```
+   Do you want to search for keywords or only extract IDs from the Output folder? (search/extract): extract
+   All unique channel IDs saved to Output/final_channel_ids_2024-12-25_12-00-00.txt
+   ```
 
 ---
 
 ## Code Overview
 
-### Key Functions:
+### Key Functions
 
-1. **`setup_driver`**:
-   Sets up a Selenium WebDriver using WebDriver Manager. Configured to run in headless mode for faster scraping.
+1. **`setup_driver()`**:
+   Sets up a headless Selenium WebDriver using WebDriver Manager.
 
-2. **`extract_channel_urls`**:
-   Uses BeautifulSoup to parse HTML and extract Telegram channel URLs.
+2. **`load_keywords_from_json(json_path)`**:
+   Loads keywords from a JSON file. Example format:
 
-3. **`extract_channel_ids`**:
-   Extracts unique Telegram channel IDs from the URLs using regular expressions.
+   ```json
+   {
+     "keywords": ["music", "technology", "news"]
+   }
+   ```
 
-4. **`scrape_telegram_channels`**:
+3. **`extract_channel_urls(driver, page_source)`**:
+   Extracts Telegram channel URLs from the page source using BeautifulSoup.
+
+4. **`extract_channel_ids(urls)`**:
+   Extracts unique channel IDs using regular expressions and returns them in sorted order.
+
+5. **`combine_all_channel_ids(output_dir)`**:
+   Combines and deduplicates all channel IDs from `.txt` files in the `Output/` directory.
+
+6. **`scrape_telegram_channels(keywords, output_dir, max_tabs, sort_by, save_ids_decision)`**:
    The main function that:
-   - Builds search URLs.
-   - Loads pages using Selenium.
-   - Extracts and saves channel URLs and IDs.
+   - Constructs search URLs based on user-provided keywords.
+   - Loads pages using Selenium and waits for dynamic content.
+   - Extracts URLs and optionally saves channel IDs.
 
 ---
 
@@ -114,34 +142,46 @@ pip install selenium webdriver-manager beautifulsoup4
 
 ```
 TelegramScraper/
-├── Extract.py        # Main script
-├── Output/           # Output directory for results
-└── README.md        # Documentation file (this file)
+├── run.py             # Main script for scraping and extracting
+├── Output/            # Directory for saving output files
+│   ├── music_2024-12-25_12-00-00.txt    # Example result file
+│   ├── music_ids_2024-12-25_12-00-00.txt # Example ID file (if enabled)
+└── README.md          # Documentation (this file)
 ```
 
 ---
 
 ## Notes
 
-- Ensure Chrome is installed on your system, as the script uses `chromedriver`.
-- If you encounter errors related to `chromedriver`, ensure it is up-to-date by using `webdriver-manager`.
-- The target website for scraping must be accessible and functional. Any changes to the website structure might require updates to the script.
+- Ensure **Chrome** is installed on your system, as the script uses `chromedriver` for Selenium.
+- If you encounter issues with `chromedriver`, update it using `webdriver-manager`.
+- The website you scrape from must be accessible. If it changes structure, updates to the script may be required.
 
 ---
 
 ## Disclaimer
 
-This script is for educational and personal use only. Scraping websites may violate their terms of service. Use responsibly and ensure you comply with all applicable laws and regulations.
+This script is for educational and personal use only. Web scraping may violate the terms of service of some websites. Use responsibly and ensure compliance with all applicable laws.
 
 ---
 
 ## Contribution
 
-Feel free to contribute by submitting issues or pull requests to improve the script.
+Feel free to contribute by submitting issues or pull requests. Improvements and bug fixes are always welcome!
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.
 
+---
+
+### New Key Functionalities
+
+- **Load Keywords from JSON**: You can now load keywords from a JSON file, making it easier to manage multiple search terms.
+- **Dynamic Scraping**: The script dynamically scrapes content using Selenium, which is essential for websites that load content dynamically (e.g., via JavaScript).
+- **Channel ID Extraction**: Unique channel IDs are extracted and saved in separate files if needed.
+- **ID Deduplication**: A function has been added to combine and deduplicate channel IDs across multiple result files.
+
+Let me know if you need any further adjustments!
