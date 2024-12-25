@@ -183,5 +183,3 @@ This project is licensed under the **MIT License**.
 - **Dynamic Scraping**: The script dynamically scrapes content using Selenium, which is essential for websites that load content dynamically (e.g., via JavaScript).
 - **Channel ID Extraction**: Unique channel IDs are extracted and saved in separate files if needed.
 - **ID Deduplication**: A function has been added to combine and deduplicate channel IDs across multiple result files.
-
-Let me know if you need any further adjustments!
