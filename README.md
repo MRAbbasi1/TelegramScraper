@@ -56,11 +56,11 @@ pip install selenium webdriver-manager beautifulsoup4
 
    Ensure you have Python 3.7+ installed.
    
-  ```bash
-  rm -rf .venv
-python3 -m venv .venv
-pip install -r requirements.txt
-  ```
+    ```bash
+    rm -rf .venv
+    python3 -m venv .venv
+    pip install -r requirements.txt
+    ```
 
 3. **Run the Script**
 
