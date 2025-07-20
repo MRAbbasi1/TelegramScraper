@@ -1,7 +1,7 @@
 ---
 # Telegram Channel Scraper
 
-This Python-based script is designed to scrape Telegram channel URLs based on user-provided keywords, using **Selenium** and **BeautifulSoup**. It allows for the extraction of Telegram channel IDs, the option to save results, and a method for combining and deduplicating extracted channel IDs from previous results.
+This Python-based script is designed to find Telegram channel URLs based on user-provided keywords, using **Selenium** and **BeautifulSoup**. It allows for the extraction of Telegram channel IDs, the option to save results, and a method for combining and deduplicating extracted channel IDs from previous results.
 ---
 
 ## Features
